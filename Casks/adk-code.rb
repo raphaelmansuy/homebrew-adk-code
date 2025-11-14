@@ -21,8 +21,4 @@ cask "adk-code" do
     "~/.adk-code",
     "~/.config/adk-code",
   ]
-
-  caveats do
-    license "https://github.com/raphaelmansuy/adk-code#license"
-  end
 end
