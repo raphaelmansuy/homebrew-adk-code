@@ -1,0 +1,27 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+*.swp
+*.swo
+*~
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.sublime-project
+*.sublime-workspace
+
+# Ruby/Gems
+.ruby-version
+.ruby-gemset
+.bundle/
+vendor/bundle/
+
+# Homebrew testing
+test/
+
+# Temporary files
+*.tmp
+*.bak
