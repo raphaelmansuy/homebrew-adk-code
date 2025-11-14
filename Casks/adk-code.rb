@@ -1,9 +1,9 @@
 cask "adk-code" do
   arch arm: "arm64", intel: "amd64"
   
-    version "0.2.0"
-    sha256 arm:   "ce07640021cc57e7bb38464e8828fbcce62fcdf3643fa166cbe34f3dcddb0f5b",
-      intel: "b27cc241b7f90599736c33e25425d77822eedd29c4928b580e8c0eb5e792c9bc"
+      version "0.2.0"
+      sha256 arm:   "b27cc241b7f90599736c33e25425d77822eedd29c4928b580e8c0eb5e792c9bc",
+        intel: "0529194a50217a9457bc887bb96662f755717db874e7bf17b0b38b84cebd1e48"
 
   url "https://github.com/raphaelmansuy/adk-code/releases/download/v#{version}/adk-code-v#{version}-darwin-#{arch}"
   name "adk-code"
