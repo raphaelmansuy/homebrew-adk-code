@@ -15,11 +15,16 @@ cask "adk-code" do
   desc "Command-line tool for adk-code"
   homepage "https://github.com/raphaelmansuy/adk-code"
 
-  preflight do
-    File.rename downloaded_path, "#{staged_path}/adk-code"
-  end
+  stage_only true
 
-  binary "adk-code"
+  postflight do
+    # Move the downloaded binary to the bin directory
+    src = "#{staged_path}/adk-code-v#{version}-darwin-#{Hardware::CPU.arm? ? "arm64" : "amd64"}"
+    dst = "#{HOMEBREW_PREFIX}/bin/adk-code"
+    FileUtils.mkdir_p File.dirname(dst)
+    FileUtils.mv src, dst
+    FileUtils.chmod 0755, dst
+  end
 
   uninstall delete: "#{HOMEBREW_PREFIX}/bin/adk-code"
 
