@@ -15,11 +15,11 @@ cask "adk-code" do
   desc "Command-line tool for adk-code"
   homepage "https://github.com/raphaelmansuy/adk-code"
 
-  artifact "adk-code", target: "#{HOMEBREW_PREFIX}/bin/adk-code"
-
-  postflight do
-    system "chmod", "+x", "#{HOMEBREW_PREFIX}/bin/adk-code"
+  preflight do
+    File.rename downloaded_path, "#{staged_path}/adk-code"
   end
+
+  binary "adk-code"
 
   uninstall delete: "#{HOMEBREW_PREFIX}/bin/adk-code"
 
