@@ -4,15 +4,15 @@ cask "adk-code" do
   on_macos do
     if Hardware::CPU.arm?
       url "https://github.com/raphaelmansuy/adk-code/releases/download/v#{version}/adk-code-v#{version}-darwin-arm64"
-      sha256 "6528e5f4c7b5e6e5e8e6e5e6e5e6e5e6e5e6e5e6e5e6e5e6e5e6e5e6e5e6e5" # Placeholder - will be updated
+      sha256 "0000000000000000000000000000000000000000000000000000000000000000"
     elsif Hardware::CPU.intel?
       url "https://github.com/raphaelmansuy/adk-code/releases/download/v#{version}/adk-code-v#{version}-darwin-amd64"
-      sha256 "5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e" # Placeholder - will be updated
+      sha256 "0000000000000000000000000000000000000000000000000000000000000000"
     end
   end
   
   homepage "https://github.com/raphaelmansuy/adk-code"
-  license "Apache-2.0"
+  license "MIT"
   
   binary "adk-code"
   
