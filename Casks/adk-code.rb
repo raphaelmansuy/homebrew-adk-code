@@ -10,6 +10,11 @@ cask "adk-code" do
   desc "Command-line tool for adk-code"
   homepage "https://github.com/raphaelmansuy/adk-code"
 
+  livecheck do
+    url :url
+    strategy :github_latest
+  end
+
   container type: :naked
 
   binary "adk-code-v#{version}-darwin-#{arch}", target: "adk-code"
