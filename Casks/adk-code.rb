@@ -1,9 +1,9 @@
 cask "adk-code" do
   arch arm: "arm64", intel: "amd64"
   
-  version "0.1.1"
-  sha256 arm:   "b8639d0e6b7ea9e0d4f99ba768c32741f928b6730d990e991e585ba614287e6f",
-         intel: "69958d07a90d0422ef3cb07e0096b6e7858ae075e2b3216cddc924968ea766b7"
+    version "0.2.0"
+    sha256 arm:   "ce07640021cc57e7bb38464e8828fbcce62fcdf3643fa166cbe34f3dcddb0f5b",
+      intel: "b27cc241b7f90599736c33e25425d77822eedd29c4928b580e8c0eb5e792c9bc"
 
   url "https://github.com/raphaelmansuy/adk-code/releases/download/v#{version}/adk-code-v#{version}-darwin-#{arch}"
   name "adk-code"
@@ -19,6 +19,8 @@ cask "adk-code" do
                    args: ["-d", "com.apple.quarantine", "#{HOMEBREW_PREFIX}/bin/adk-code"],
                    sudo: false
   end
+
+  # v0.2.0 removed the go.mod requirement — no project root is required.
 
   zap trash: [
     "~/.adk-code",
