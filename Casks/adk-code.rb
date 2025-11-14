@@ -1,9 +1,9 @@
 cask "adk-code" do
   arch arm: "arm64", intel: "amd64"
   
-      version "0.2.0"
-      sha256 arm:   "b27cc241b7f90599736c33e25425d77822eedd29c4928b580e8c0eb5e792c9bc",
-        intel: "0529194a50217a9457bc887bb96662f755717db874e7bf17b0b38b84cebd1e48"
+      version "0.2.1"
+      sha256 arm:   "ff75da3afba2030751a1dc8202956db1530827545673786ff2ffc48fa1f5faad",
+        intel: "f2bb99340062d344385b5bd71569ea0c7a1957b251d32f83ab5d6c1a7537de89"
 
   url "https://github.com/raphaelmansuy/adk-code/releases/download/v#{version}/adk-code-v#{version}-darwin-#{arch}"
   name "adk-code"
@@ -25,7 +25,7 @@ cask "adk-code" do
                    sudo: false
   end
 
-  # v0.2.0 removed the go.mod requirement — no project root is required.
+  # v0.2.1 includes CGO support for SQLite (PR #9)
 
   zap trash: [
     "~/.adk-code",
