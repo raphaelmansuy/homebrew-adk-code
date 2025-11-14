@@ -12,13 +12,9 @@ cask "adk-code" do
   end
   
   homepage "https://github.com/raphaelmansuy/adk-code"
-  license "MIT"
+  license :mit
   
   binary "adk-code"
-  
-  post_install do
-    chmod 0755, staged_path/"adk-code"
-  end
   
   zap trash: [
     "~/.adk-code",
