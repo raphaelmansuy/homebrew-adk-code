@@ -15,7 +15,11 @@ cask "adk-code" do
   desc "Command-line tool for adk-code"
   homepage "https://github.com/raphaelmansuy/adk-code"
 
-  binary "adk-code"
+  binary "adk-code", target: "adk-code"
+
+  postflight do
+    FileUtils.chmod 0755, staged_path/"adk-code"
+  end
 
   zap trash: [
     "~/.adk-code",
