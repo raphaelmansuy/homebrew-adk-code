@@ -14,6 +14,12 @@ cask "adk-code" do
 
   binary "adk-code-v#{version}-darwin-#{arch}", target: "adk-code"
 
+  postflight do
+    system_command "xattr",
+                   args: ["-d", "com.apple.quarantine", "#{HOMEBREW_PREFIX}/bin/adk-code"],
+                   sudo: false
+  end
+
   zap trash: [
     "~/.adk-code",
     "~/.config/adk-code",
