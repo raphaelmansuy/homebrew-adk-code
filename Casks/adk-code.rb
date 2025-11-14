@@ -21,7 +21,7 @@ cask "adk-code" do
     system "chmod", "+x", "#{HOMEBREW_PREFIX}/bin/adk-code"
   end
 
-  uninstall manual: "adk-code"
+  uninstall delete: "#{HOMEBREW_PREFIX}/bin/adk-code"
 
   zap trash: [
     "~/.adk-code",
