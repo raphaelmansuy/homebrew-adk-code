@@ -10,18 +10,19 @@ cask "adk-code" do
       sha256 "0000000000000000000000000000000000000000000000000000000000000000"
     end
   end
-  
+
+  name "adk-code"
+  desc "Command-line tool for adk-code"
   homepage "https://github.com/raphaelmansuy/adk-code"
-  license :mit
-  
+
   binary "adk-code"
-  
+
   zap trash: [
     "~/.adk-code",
     "~/.config/adk-code",
   ]
-  
-  test do
-    system "#{staged_path}/adk-code", "--version"
+
+  caveats do
+    license "https://github.com/raphaelmansuy/adk-code#license"
   end
 end
