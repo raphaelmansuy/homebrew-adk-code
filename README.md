@@ -56,9 +56,10 @@ This tap provides:
 
 - ✅ Pre-compiled binaries (no compilation required)
 - ✅ Fast installation (~5-10 seconds)
-- ✅ Automatic SHA256 verification
+- ✅ **Automatic version detection** from GitHub releases
 - ✅ One-command installation and updates
 - ✅ Integration with standard macOS installer tools
+- ✅ Always installs the latest stable release
 
 ## Verification
 
@@ -140,12 +141,12 @@ brew uninstall adk-code
 
 ## Maintenance
 
-This tap is automatically updated whenever a new version of adk-code is released. The update process:
+This tap uses **automatic version detection** from GitHub releases:
 
-1. A new release is published in the [adk-code repository](https://github.com/raphaelmansuy/adk-code)
-2. CI/CD workflow automatically updates the cask
-3. A pull request is created for review
-4. Once merged, the cask becomes available via `brew upgrade`
+- The cask dynamically fetches the latest version from the [adk-code repository](https://github.com/raphaelmansuy/adk-code)
+- No manual version updates required—always points to the latest stable release
+- `brew upgrade adk-code` automatically downloads and installs the newest version
+- Version detection uses GitHub's atom feed for reliable release tracking
 
 ## License
 
@@ -158,6 +159,21 @@ For support, issues, and feature requests:
 - 🐛 [Report bugs](https://github.com/raphaelmansuy/adk-code/issues)
 - 💡 [Request features](https://github.com/raphaelmansuy/adk-code/discussions)
 - 📖 [Read documentation](https://github.com/raphaelmansuy/adk-code/docs)
+
+## How Version Detection Works
+
+The cask uses Homebrew's `livecheck` feature to:
+
+1. Monitor the [adk-code GitHub releases](https://github.com/raphaelmansuy/adk-code/releases)
+2. Automatically detect new releases via the GitHub atom feed
+3. Extract version numbers using regex pattern matching
+4. Dynamically construct download URLs for the latest version
+
+You can manually check for updates with:
+
+```bash
+brew livecheck adk-code
+```
 
 ---
 
