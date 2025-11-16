@@ -71,11 +71,14 @@ To verify the integrity of the installed binary:
 # Check the binary location
 which adk-code
 
-# Verify it works
-adk-code --version
+# Verify it works (note: use without --version flag)
+adk-code --help
 
-# Check SHA256 (optional)
-shasum -a 256 /usr/local/bin/adk-code
+# Check installed version
+brew list --versions adk-code
+
+# Check SHA256 (optional, path may vary by architecture)
+shasum -a 256 $(brew --prefix)/bin/adk-code
 ```
 
 ## Troubleshooting
@@ -94,7 +97,16 @@ brew update
 
 ```bash
 # Fix permissions
-chmod +x /usr/local/bin/adk-code
+chmod +x $(brew --prefix)/bin/adk-code
+```
+
+### SHA256 mismatch errors
+
+```bash
+# Clear Homebrew cache and reinstall
+brew uninstall adk-code
+rm -rf "$(brew --cache)/downloads/*adk-code*"
+brew install adk-code
 ```
 
 ### Remove old versions
@@ -103,8 +115,8 @@ chmod +x /usr/local/bin/adk-code
 # Clean up old installations
 brew cleanup adk-code
 
-# Or remove all old bottles
-brew cleanup --dry-run
+# Or check what would be removed
+brew cleanup --dry-run adk-code
 ```
 
 ## Reporting Issues
@@ -145,9 +157,8 @@ brew uninstall adk-code
 
 This tap uses **livecheck** to automatically detect new versions from GitHub releases:
 
-- The cask is updated with specific version numbers and SHA256 checksums
+- The cask is manually updated with specific version numbers and SHA256 checksums
 - `livecheck` monitors the [adk-code GitHub releases](https://github.com/raphaelmansuy/adk-code/releases) for new versions
-- CI/CD automatically creates pull requests when new releases are published
 - Users get notified of updates via `brew outdated` and can upgrade with `brew upgrade adk-code`
 
 ## License
@@ -177,15 +188,21 @@ You can manually check for updates with:
 brew livecheck adk-code
 ```
 
-### CI/CD Automation
+### Manual Update Process
 
 When a new release is published in the upstream [adk-code repository](https://github.com/raphaelmansuy/adk-code):
 
-1. GitHub Actions workflow automatically triggers
-2. Downloads and verifies the new binaries
-3. Creates a pull request to update the cask (if needed)
-4. Ensures the cask continues to work with the latest release
+1. Download both darwin-arm64 and darwin-amd64 binaries from the release
+2. Compute SHA256 hashes using `shasum -a 256`
+3. Update `Casks/adk-code.rb` with new version and hashes
+4. Test installation locally with `brew install --cask adk-code`
+5. Commit and push changes to the repository
 
-This ensures users always get the most up-to-date version automatically.
+Users can check for new versions with:
 
-**Note**: This is an unofficial tap maintained for convenience. For the most up-to-date information about adk-code, always refer to the [main adk-code repository](https://github.com/raphaelmansuy/adk-code).
+```bash
+brew livecheck adk-code
+brew outdated --cask
+```
+
+**Note**: This is the official tap for adk-code. For usage documentation and feature requests, refer to the [main adk-code repository](https://github.com/raphaelmansuy/adk-code).
