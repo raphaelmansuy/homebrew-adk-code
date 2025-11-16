@@ -21,7 +21,8 @@ cask "adk-code" do
   postflight do
     system_command "xattr",
                    args: ["-d", "com.apple.quarantine", "#{HOMEBREW_PREFIX}/bin/adk-code"],
-                   sudo: false
+                   sudo: false,
+                   must_succeed: false
   end
 
   zap trash: [
