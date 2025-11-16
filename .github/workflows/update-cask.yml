@@ -46,32 +46,73 @@ jobs:
 
           echo "🔄 Updating to version: ${VERSION}"
 
-      - name: Download and verify binaries
+      - name: Update cask
         run: |
           VERSION="${{ steps.version.outputs.version_num }}"
-          TAG="v${VERSION}"
 
+          # Download and compute checksums
           echo "📥 Downloading binaries for version ${VERSION}..."
 
-          # Download ARM64 binary
-          curl -L -o "adk-code-${TAG}-darwin-arm64" \
-            "https://github.com/raphaelmansuy/adk-code/releases/download/${TAG}/adk-code-${TAG}-darwin-arm64"
+          # ARM64
+          curl -L -o "adk-code-v${VERSION}-darwin-arm64" \
+            "https://github.com/raphaelmansuy/adk-code/releases/download/v${VERSION}/adk-code-v${VERSION}-darwin-arm64"
+          ARM64_SHA=$(shasum -a 256 "adk-code-v${VERSION}-darwin-arm64" | awk '{print $1}')
 
-          # Download AMD64 binary
-          curl -L -o "adk-code-${TAG}-darwin-amd64" \
-            "https://github.com/raphaelmansuy/adk-code/releases/download/${TAG}/adk-code-${TAG}-darwin-amd64"
+          # AMD64
+          curl -L -o "adk-code-v${VERSION}-darwin-amd64" \
+            "https://github.com/raphaelmansuy/adk-code/releases/download/v${VERSION}/adk-code-v${VERSION}-darwin-amd64"
+          AMD64_SHA=$(shasum -a 256 "adk-code-v${VERSION}-darwin-amd64" | awk '{print $1}')
 
-          # Verify binaries are valid Mach-O executables
-          file "adk-code-${TAG}-darwin-arm64" | grep -q "Mach-O" || {
-            echo "❌ ARM64 binary is not a valid Mach-O executable"
-            exit 1
-          }
-          file "adk-code-${TAG}-darwin-amd64" | grep -q "Mach-O" || {
-            echo "❌ AMD64 binary is not a valid Mach-O executable"
-            exit 1
-          }
+          echo "🔐 Computed checksums:"
+          echo "  ARM64: ${ARM64_SHA}"
+          echo "  AMD64: ${AMD64_SHA}"
 
-          echo "✅ Binaries verified successfully"
+          # Update cask file
+          cat > Casks/adk-code.rb << 'EOF'
+cask "adk-code" do
+  arch arm: "arm64", intel: "amd64"
+
+  version "VERSION_PLACEHOLDER"
+
+  on_macos do
+    if Hardware::CPU.arm?
+      url "https://github.com/raphaelmansuy/adk-code/releases/download/v#{version}/adk-code-v#{version}-darwin-arm64"
+      sha256 "ARM64_SHA_PLACEHOLDER"
+    elsif Hardware::CPU.intel?
+      url "https://github.com/raphaelmansuy/adk-code/releases/download/v#{version}/adk-code-v#{version}-darwin-amd64"
+      sha256 "AMD64_SHA_PLACEHOLDER"
+    end
+  end
+
+  name "adk-code"
+  desc "Multi-model AI coding assistant CLI powered by Google ADK"
+  homepage "https://github.com/raphaelmansuy/adk-code"
+
+  livecheck do
+    url "https://github.com/raphaelmansuy/adk-code/releases.atom"
+    regex(%r{/releases/tag/v?(\d+(?:\.\d+)*)}i)
+    strategy :github_latest
+  end
+
+  binary "adk-code"
+
+  postflight do
+    system_command "xattr",
+                   args: ["-d", "com.apple.quarantine", "#{HOMEBREW_PREFIX}/bin/adk-code"],
+                   sudo: false
+  end
+
+  zap trash: [
+    "~/.adk-code",
+    "~/.config/adk-code",
+  ]
+end
+EOF
+
+          # Replace placeholders in the cask file
+          sed -i '' "s/VERSION_PLACEHOLDER/${VERSION}/g" Casks/adk-code.rb
+          sed -i '' "s/ARM64_SHA_PLACEHOLDER/${ARM64_SHA}/g" Casks/adk-code.rb
+          sed -i '' "s/AMD64_SHA_PLACEHOLDER/${AMD64_SHA}/g" Casks/adk-code.rb
 
       - name: Audit cask
         run: |

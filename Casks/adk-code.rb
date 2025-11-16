@@ -1,11 +1,16 @@
 cask "adk-code" do
   arch arm: "arm64", intel: "amd64"
 
-  version :latest
-  sha256 :no_check
+  version "0.3.0"
 
-  url do |version|
-    "https://github.com/raphaelmansuy/adk-code/releases/download/v#{version}/adk-code-v#{version}-darwin-#{arch}"
+  on_macos do
+    if Hardware::CPU.arm?
+      url "https://github.com/raphaelmansuy/adk-code/releases/download/v#{version}/adk-code-v#{version}-darwin-arm64"
+      sha256 "91309bf50709de94a2bb7cba5f3f1df0abcf4e3097e5614f4d77ce7aa601e460"
+    elsif Hardware::CPU.intel?
+      url "https://github.com/raphaelmansuy/adk-code/releases/download/v#{version}/adk-code-v#{version}-darwin-amd64"
+      sha256 "e0bd729f61114a4e68780a6a21d7bb61c9931438a43232b14d2f4e7c87b913c9"
+    end
   end
 
   name "adk-code"
@@ -18,9 +23,7 @@ cask "adk-code" do
     strategy :github_latest
   end
 
-  container type: :naked
-
-  binary "adk-code-v#{version}-darwin-#{arch}", target: "adk-code"
+  binary "adk-code"
 
   postflight do
     system_command "xattr",

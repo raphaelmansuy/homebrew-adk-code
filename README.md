@@ -143,12 +143,12 @@ brew uninstall adk-code
 
 ## Maintenance
 
-This tap uses **automatic version detection** from GitHub releases:
+This tap uses **livecheck** to automatically detect new versions from GitHub releases:
 
-- The cask dynamically fetches the latest version from the [adk-code repository](https://github.com/raphaelmansuy/adk-code)
-- No manual version updates required—always points to the latest stable release
-- `brew upgrade adk-code` automatically downloads and installs the newest version
-- Version detection uses GitHub's atom feed for reliable release tracking
+- The cask is updated with specific version numbers and SHA256 checksums
+- `livecheck` monitors the [adk-code GitHub releases](https://github.com/raphaelmansuy/adk-code/releases) for new versions
+- CI/CD automatically creates pull requests when new releases are published
+- Users get notified of updates via `brew outdated` and can upgrade with `brew upgrade adk-code`
 
 ## License
 
