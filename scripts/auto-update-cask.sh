@@ -143,23 +143,23 @@ download_and_hash() {
     local url="https://github.com/${REPO_OWNER}/${REPO_NAME}/releases/download/v${version}/adk-code-v${version}-darwin-${arch}"
     local output_file="${TEMP_DIR}/adk-code-v${version}-darwin-${arch}"
     
-    print_info "Downloading darwin-${arch} binary..."
-    if ! curl -sL -o "$output_file" "$url"; then
-        print_error "Failed to download darwin-${arch} binary"
+    print_info "Downloading darwin-${arch} binary..." >&2
+    if ! curl -sL -o "$output_file" "$url" 2>&1 >&2; then
+        print_error "Failed to download darwin-${arch} binary" >&2
         return 1
     fi
     
     if [[ ! -f "$output_file" ]] || [[ ! -s "$output_file" ]]; then
-        print_error "Downloaded file is missing or empty: $output_file"
+        print_error "Downloaded file is missing or empty: $output_file" >&2
         return 1
     fi
     
-    print_info "Computing SHA256 for darwin-${arch}..."
+    print_info "Computing SHA256 for darwin-${arch}..." >&2
     local sha256
     sha256=$(shasum -a 256 "$output_file" | awk '{print $1}')
     
     if [[ -z "$sha256" ]]; then
-        print_error "Failed to compute SHA256 for darwin-${arch}"
+        print_error "Failed to compute SHA256 for darwin-${arch}" >&2
         return 1
     fi
     
@@ -180,19 +180,9 @@ update_cask_file() {
     # Update version
     sed -i '' "s/version \"[^\"]*\"/version \"${version}\"/" "$CASK_FILE"
     
-    # Update SHA256 hashes
-    # This handles the multi-line sha256 format
-    awk -v arm64="$arm64_sha" -v amd64="$amd64_sha" '
-    /sha256 arm:/ {
-        print "  sha256 arm:   \"" arm64 "\","
-        getline
-        print "         intel: \"" amd64 "\""
-        next
-    }
-    {print}
-    ' "$CASK_FILE" > "${CASK_FILE}.tmp"
-    
-    mv "${CASK_FILE}.tmp" "$CASK_FILE"
+    # Update SHA256 hashes using a more reliable approach
+    # Use perl for multi-line pattern matching
+    perl -i -pe "BEGIN{undef $/;} s/sha256 arm:\\s+\"[^\"]+\",\\s+intel:\\s+\"[^\"]+\"/sha256 arm:   \"$arm64_sha\",\n         intel: \"$amd64_sha\"/smg" "$CASK_FILE"
     
     # Verify the Ruby syntax
     if ! ruby -c "$CASK_FILE" > /dev/null 2>&1; then
