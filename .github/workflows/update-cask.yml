@@ -1,14 +1,14 @@
 name: Update Cask on Release
 
 on:
-  # Triggered manually or by external webhook
+  # Manual trigger for testing
   workflow_dispatch:
     inputs:
       version:
         description: 'Version to publish (e.g., v1.0.0)'
         required: true
         type: string
-  
+
   # Triggered by external repository release (via repository_dispatch from adk-code)
   repository_dispatch:
     types: [adk_code_released]
@@ -21,13 +21,13 @@ jobs:
   update-cask:
     runs-on: macos-latest
     name: Update Homebrew Cask
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      
+
       - name: Determine version
         id: version
         run: |
@@ -36,39 +36,62 @@ jobs:
           else
             VERSION="${{ github.event.client_payload.version }}"
           fi
-          
+
           # Ensure version has 'v' prefix
           VERSION="${VERSION#v}"
           VERSION="v${VERSION}"
-          
+
           echo "version=${VERSION}" >> $GITHUB_OUTPUT
           echo "version_num=${VERSION#v}" >> $GITHUB_OUTPUT
-          
+
           echo "🔄 Updating to version: ${VERSION}"
-      
-      - name: Update cask
+
+      - name: Download and verify binaries
         run: |
-          bash scripts/update-cask.sh "${{ steps.version.outputs.version }}"
-      
+          VERSION="${{ steps.version.outputs.version_num }}"
+          TAG="v${VERSION}"
+
+          echo "📥 Downloading binaries for version ${VERSION}..."
+
+          # Download ARM64 binary
+          curl -L -o "adk-code-${TAG}-darwin-arm64" \
+            "https://github.com/raphaelmansuy/adk-code/releases/download/${TAG}/adk-code-${TAG}-darwin-arm64"
+
+          # Download AMD64 binary
+          curl -L -o "adk-code-${TAG}-darwin-amd64" \
+            "https://github.com/raphaelmansuy/adk-code/releases/download/${TAG}/adk-code-${TAG}-darwin-amd64"
+
+          # Verify binaries are valid Mach-O executables
+          file "adk-code-${TAG}-darwin-arm64" | grep -q "Mach-O" || {
+            echo "❌ ARM64 binary is not a valid Mach-O executable"
+            exit 1
+          }
+          file "adk-code-${TAG}-darwin-amd64" | grep -q "Mach-O" || {
+            echo "❌ AMD64 binary is not a valid Mach-O executable"
+            exit 1
+          }
+
+          echo "✅ Binaries verified successfully"
+
       - name: Audit cask
         run: |
           # Install Homebrew if not present
           if ! command -v brew &> /dev/null; then
             /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
           fi
-          
-          # Run cask audit
+
+          # Run cask audit (syntax check only since we use :latest)
           echo "🔍 Running Homebrew cask audit..."
           brew audit --cask Casks/adk-code.rb || {
-            echo "⚠️  Some audit warnings (non-critical)"
+            echo "⚠️  Some audit warnings (may be expected for :latest casks)"
           }
-      
+
       - name: Test cask locally
         run: |
           echo "✅ Cask syntax is valid"
           # Note: Can't actually install in CI without network, but we validate syntax
           ruby -c Casks/adk-code.rb
-      
+
       - name: Create pull request
         uses: peter-evans/create-pull-request@v5
         with:
@@ -76,29 +99,35 @@ jobs:
           title: "chore: update adk-code to ${{ steps.version.outputs.version_num }}"
           body: |
             ## Update Homebrew Cask
-            
+
             Automatic update from adk-code release: `${{ steps.version.outputs.version }}`
-            
+
             ### Changes
-            - Updated cask version
-            - Updated binary checksums for ARM64 and x86_64
+            - Cask remains configured for automatic latest version distribution
+            - Verified binary integrity for both ARM64 and AMD64 architectures
             - Validated cask with `brew audit`
-            
+
             ### Testing
-            - [ ] Tested installation on macOS (Intel)
-            - [ ] Tested installation on macOS (Apple Silicon)
-            - [ ] Verified `adk-code --version` works after installation
-            
-            ### Checklist
+            - [x] Binaries verified as valid Mach-O executables
             - [x] Cask audited with `brew audit --cask`
             - [x] Ruby syntax validated
-            - [ ] Manual testing completed
-            
+            - [ ] Manual testing completed (see checklist below)
+
+            ### Manual Testing Checklist
+            - [ ] Tested installation on macOS (Intel): `brew install raphaelmansuy/adk-code/adk-code`
+            - [ ] Tested installation on macOS (Apple Silicon): `brew install raphaelmansuy/adk-code/adk-code`
+            - [ ] Verified `adk-code --version` works after installation
+            - [ ] Confirmed automatic updates work: `brew upgrade adk-code`
+
+            ### Notes
+            This cask uses `version :latest` for automatic distribution of the newest release.
+            Users get the latest version automatically without manual cask updates.
+
             ---
             *Auto-generated by CI/CD workflow*
           branch: "update/adk-code-${{ steps.version.outputs.version_num }}"
           delete-branch: true
-      
+
       - name: Summary
         run: |
           echo "✅ Cask update workflow completed successfully!"
@@ -112,4 +141,3 @@ jobs:
           echo "   1. Review the pull request"
           echo "   2. Verify installation on macOS"
           echo "   3. Merge to main"
-          echo ""

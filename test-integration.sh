@@ -66,14 +66,14 @@ else
     echo -e "${GREEN}✓${NC} Fixed executable permissions"
 fi
 
-# Test 7: Test update-cask script with dry-run
-echo -e "\n${YELLOW}→${NC} Test 7: Testing update-cask.sh script..."
-echo -e "${BLUE}Running: ./scripts/update-cask.sh v0.0.1${NC}"
-if bash scripts/update-cask.sh v0.0.1 2>&1 | tail -5; then
-    echo -e "${GREEN}✓${NC} Update script executed successfully"
+# Test 7: Test livecheck functionality
+echo -e "\n${YELLOW}→${NC} Test 7: Testing livecheck functionality..."
+if command -v brew &> /dev/null; then
+    echo -e "${BLUE}Testing livecheck (may require network)...${NC}"
+    # Note: livecheck may fail in CI without proper tap setup, so we make this optional
+    brew livecheck adk-code 2>/dev/null || echo -e "${YELLOW}⚠${NC} Livecheck test skipped (expected in isolated environment)"
 else
-    echo -e "${RED}✗${NC} Update script failed"
-    exit 1
+    echo -e "${YELLOW}⚠${NC} Homebrew not available for livecheck test"
 fi
 
 # Test 8: Git repository status

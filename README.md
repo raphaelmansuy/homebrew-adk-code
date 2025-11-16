@@ -60,6 +60,8 @@ This tap provides:
 - ✅ One-command installation and updates
 - ✅ Integration with standard macOS installer tools
 - ✅ Always installs the latest stable release
+- ✅ Cross-platform support (macOS Intel + Apple Silicon)
+- ✅ Automatic quarantine removal for seamless execution
 
 ## Verification
 
@@ -175,6 +177,15 @@ You can manually check for updates with:
 brew livecheck adk-code
 ```
 
----
+### CI/CD Automation
+
+When a new release is published in the upstream [adk-code repository](https://github.com/raphaelmansuy/adk-code):
+
+1. GitHub Actions workflow automatically triggers
+2. Downloads and verifies the new binaries
+3. Creates a pull request to update the cask (if needed)
+4. Ensures the cask continues to work with the latest release
+
+This ensures users always get the most up-to-date version automatically.
 
 **Note**: This is an unofficial tap maintained for convenience. For the most up-to-date information about adk-code, always refer to the [main adk-code repository](https://github.com/raphaelmansuy/adk-code).

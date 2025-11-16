@@ -1,15 +1,15 @@
 cask "adk-code" do
   arch arm: "arm64", intel: "amd64"
-  
+
   version :latest
   sha256 :no_check
 
   url do |version|
     "https://github.com/raphaelmansuy/adk-code/releases/download/v#{version}/adk-code-v#{version}-darwin-#{arch}"
   end
-  
+
   name "adk-code"
-  desc "Command-line tool for adk-code"
+  desc "Multi-model AI coding assistant CLI powered by Google ADK"
   homepage "https://github.com/raphaelmansuy/adk-code"
 
   livecheck do
