@@ -188,9 +188,23 @@ You can manually check for updates with:
 brew livecheck adk-code
 ```
 
-### Manual Update Process
+### Update Process
 
-When a new release is published in the upstream [adk-code repository](https://github.com/raphaelmansuy/adk-code):
+When a new release is published in the upstream [adk-code repository](https://github.com/raphaelmansuy/adk-code), you can update the cask using the automated scripts:
+
+**Automated update (recommended):**
+
+```bash
+# Update to latest release
+./scripts/auto-update-cask.sh --latest
+
+# Or update to specific version
+./scripts/auto-update-cask.py 0.3.1
+```
+
+See [scripts/README.md](scripts/README.md) for detailed documentation on the automation scripts.
+
+**Manual update process:**
 
 1. Download both darwin-arm64 and darwin-amd64 binaries from the release
 2. Compute SHA256 hashes using `shasum -a 256`
