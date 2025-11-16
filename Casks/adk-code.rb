@@ -10,13 +10,15 @@ cask "adk-code" do
   desc "Multi-model AI coding assistant CLI powered by Google ADK"
   homepage "https://github.com/raphaelmansuy/adk-code"
 
+  container type: :naked
+
   livecheck do
     url "https://github.com/raphaelmansuy/adk-code/releases.atom"
     regex(%r{/releases/tag/v?(\d+(?:\.\d+)*)}i)
     strategy :github_latest
   end
 
-  binary "adk-code"
+  binary "adk-code-v#{version}-darwin-#{arch}", target: "adk-code"
 
   postflight do
     system_command "xattr",
